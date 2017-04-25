@@ -13,12 +13,13 @@ PubSubClient client(wifiClient);
 
 void setup() {
   Serial.begin(115200);
-  
+
   sprintf(stationID, "%d", ESP.getChipId());
 
   setup_wifi();
 
   client.setServer(mqtt_server, 1883);
+  client.setCallback(mqtt_callback);
   mqtt_connect();
 }
 
@@ -48,11 +49,23 @@ void mqtt_connect() {
       char msg[100];
       sprintf(msg, "station/%s/status", stationID);
       client.publish(msg, "on");
+
+      // ... and resubscribe
+      sprintf(msg, "station/%s/alarm", stationID);
+      client.subscribe(msg);      
     } else {
       Serial.printf(" error: %s. Trying again in 10 seconds.\n", client.state());
       delay(10000);
     }
   }
+}
+
+void mqtt_callback(char* topic, byte* payload, unsigned int length) {
+  char c_payload[length];
+  memcpy(c_payload, payload, length);
+  c_payload[length] = '\0';
+
+  Serial.printf("<- %s: %s\n", topic, c_payload);
 }
 
 void loop() {
