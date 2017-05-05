@@ -8,5 +8,9 @@
 #define MQTT_SERVER "mqtt_server"
 #define MQTT_PORT 1883
 
-#define PIN_LED_ALARM 2
+#define ALARM_LED_PIN 2
+
+#define SENSOR_DHT_PIN D1
+#define SENSOR_DHT_READ_INTERVAL 2000
+#define SENSOR_DHTTYPE DHT11
 

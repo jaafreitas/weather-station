@@ -3,6 +3,8 @@
 #include "alarm.h"
 #include "conn.h"
 
+WiFiClient wifiClient;
+
 void setupWiFi(char* _stationID) {
   Serial.printf("\nConnecting station %s to SSID %s", _stationID, WIFI_SSID);
 
@@ -34,10 +36,8 @@ void callbackMQTT(char* topic, byte* payload, unsigned int length) {
 Conn::Conn(char* stationID) {
   this->_stationID = stationID;
 
-  setupWiFi(stationID);
+  setupWiFi(this->_stationID);
   
-  WiFiClient wifiClient;
-
   this->_PubSubClient = new PubSubClient(wifiClient);
   this->_PubSubClient->setServer(MQTT_SERVER, MQTT_PORT);
   this->_PubSubClient->setCallback(callbackMQTT);
@@ -51,13 +51,15 @@ void Conn::connect() {
         Serial.println(" Ok.");
   
         // Once connected, publish an announcement...
-        char msg[100];
-        sprintf(msg, "station/%s/status", this->_stationID);
-        this->_PubSubClient->publish(msg, "on");
+        char topic[100];
+        
+        sprintf(topic, "station/%s/status", this->_stationID);        
+        Serial.printf("-> %s: %s\n", topic, "on");
+        this->_PubSubClient->publish(topic, "on");
   
         // ... and resubscribe
-        sprintf(msg, "station/%s/alarm", this->_stationID);
-        this->_PubSubClient->subscribe(msg);      
+        sprintf(topic, "station/%s/alarm", this->_stationID);
+        this->_PubSubClient->subscribe(topic);      
       } else {
         Serial.printf(" ERROR: %d. Trying again in 10 seconds.\n", this->_PubSubClient->state());
         delay(10000);
@@ -67,9 +69,18 @@ void Conn::connect() {
 };
 
 void Conn::loop() {
-  if (!this->_PubSubClient->connected()) {
-    this->connect();
-  }
+  this->connect();
   this->_PubSubClient->loop();
 }
+
+void Conn::notify(const char* sensor, float value) {
+  char topic[100];
+  sprintf(topic, "station/%s/sensor/%s", this->_stationID, sensor);
+
+  static char payload[5];
+  dtostrf(value, 5, 2, payload);
+
+  Serial.printf("-> %s: %s\n", topic, payload);
+  this->_PubSubClient->publish(topic, payload);
+};
 
