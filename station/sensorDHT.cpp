@@ -9,21 +9,21 @@ dht DHT;
 
 os_timer_t sensorDHTTimer;
 
-bool canRead = false;
+bool canReadSensorDHT = true;
 
 void sensorDHTRead(void *parg) {
-  canRead = true;
+  canReadSensorDHT = true;
 }
 
 void setupSensorDHT() {
   os_timer_disarm(&sensorDHTTimer);  
   os_timer_setfn(&sensorDHTTimer, sensorDHTRead, NULL);
-  os_timer_arm(&sensorDHTTimer, SENSOR_DHT_READ_INTERVAL, 1);
+  os_timer_arm(&sensorDHTTimer, SENSOR_DHT_READ_INTERVAL, true);
 }
 
 void loopSensorDHT( CONN_NOTIFY  ) {
-  if (canRead) {
-    canRead = false;
+  if (canReadSensorDHT) {
+    canReadSensorDHT = false;
 
     int chk = DHT.read11(SENSOR_DHT_PIN);
     switch (chk)
