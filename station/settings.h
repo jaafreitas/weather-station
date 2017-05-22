@@ -2,6 +2,9 @@
 
 #include <Arduino.h>
 
+#define VREF_5V 4.75
+#define VREF 3.29
+
 #define WIFI_SSID "ssid"
 #define WIFI_PASSWORD "password"
 
@@ -17,4 +20,7 @@
 #define SENSOR_ULTRASONIC_TRIGGER_PIN D7
 #define SENSOR_ULTRASONIC_ECHO_PIN D8
 #define SENSOR_ULTRASONIC_READ_INTERVAL 1000
+
+#define SENSOR_MPXH6300A_PIN A0
+#define SENSOR_MPXH6300A_READ_INTERVAL 1000
 

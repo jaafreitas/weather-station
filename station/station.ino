@@ -4,6 +4,7 @@
 #include "alarm.h"
 #include "sensorDHT.h"
 #include "sensorUltrasonic.h"
+#include "sensorMPXH6300A.h"
 
 Conn* conn;
 char stationID[10];
@@ -18,6 +19,7 @@ void setup() {
   
   setupSensorDHT();
   setupSensorUltrasonic();
+  setupSensorMPXH6300A();
 }
 
 void loop() {
@@ -28,6 +30,10 @@ void loop() {
   });
   
   loopSensorUltrasonic([](const char* sensor, float value) {
+    conn->notify(sensor, value);
+  });
+
+  loopSensorMPXH6300A([](const char* sensor, float value) {
     conn->notify(sensor, value);
   });
 }
