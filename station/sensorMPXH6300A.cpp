@@ -25,11 +25,18 @@ void loopSensorMPXH6300A( CONN_NOTIFY  ) {
   if (canReadSensorMPXH6300A) {
     canReadSensorMPXH6300A = false;
 
-    int sensorValue = analogRead(SENSOR_MPXH6300A_PIN);
+    int samples = 0;
+    float sensorValue;
+    while (samples < 1000) {
+      sensorValue += analogRead(SENSOR_MPXH6300A_PIN);
+      samples++;
+    }
+    sensorValue /= 1000;
+    
     float volts = (sensorValue / 1023.0) * VREF;
     float kPa = (volts + 0.00353 * VREF_5V) / (0.00318 * VREF_5V);
     float atm = kPa / 101.325;
-   
+
     notify("MPXH6300A", atm);
   }
 }

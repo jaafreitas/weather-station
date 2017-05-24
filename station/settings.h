@@ -2,8 +2,8 @@
 
 #include <Arduino.h>
 
-#define VREF_5V 4.75
-#define VREF 3.29
+#define VREF_5V 4.8
+#define VREF 3.32
 
 #define WIFI_SSID "ssid"
 #define WIFI_PASSWORD "password"
