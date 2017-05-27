@@ -35,9 +35,8 @@ void loopSensorMPXH6300A( CONN_NOTIFY  ) {
     
     float volts = (sensorValue / 1023.0) * VREF;
     float kPa = (volts + 0.00353 * VREF_5V) / (0.00318 * VREF_5V);
-    float atm = kPa / 101.325;
-
-    notify("MPXH6300A", atm);
+   
+    notify("MPXH6300A", kPa);
   }
 }
 

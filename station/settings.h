@@ -2,12 +2,12 @@
 
 #include <Arduino.h>
 
-#define VREF_5V 4.8
-#define VREF 3.32
 //#define DEBUG
 
 #define WIFI_SSID "ssid"
 #define WIFI_PASSWORD "password"
+#define VREF_5V 4.82
+#define VREF 3.365
 
 #define MQTT_SERVER "mqtt_server"
 #define MQTT_PORT 1883
