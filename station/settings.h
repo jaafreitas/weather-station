@@ -12,6 +12,11 @@
 #define MQTT_SERVER "mqtt_server"
 #define MQTT_PORT 1883
 
+#define NTP_SERVER "a.st1.ntp.br"
+#define NTP_PORT 123
+#define NTP_LOCALPORT 2390
+#define NTP_INTERVAL 600
+
 #define ALARM_LED_PIN D4
 
 #define SENSOR_DHT_PIN D1

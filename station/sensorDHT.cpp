@@ -34,13 +34,13 @@ void loopSensorDHT( CONN_NOTIFY  ) {
         notify("humidity", DHT.humidity);
         break;
       case DHTLIB_ERROR_CHECKSUM:
-        debugMsg("sensorDHTRead: Checksum error\n");
+        debugMsg(true, "sensorDHTRead: Checksum error\n");
         break;
       case DHTLIB_ERROR_TIMEOUT:
-        debugMsg("sensorDHTRead: Time out error\n");
+        debugMsg(true, "sensorDHTRead: Time out error\n");
         break;
       default:
-        debugMsg("sensorDHTRead: Unknown error\n");
+        debugMsg(true, "sensorDHTRead: Unknown error\n");
         break;
     }
   }

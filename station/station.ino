@@ -2,6 +2,7 @@
 #include "settings.h"
 #include "conn.h"
 #include "alarm.h"
+#include "ntp.h"
 #include "sensorDHT.h"
 #include "sensorUltrasonic.h"
 #include "sensorMPXH6300A.h"
@@ -18,7 +19,8 @@ void setup() {
   
   setupAlarm();
   conn = new Conn(stationID);
-  
+  setupNTPClient();
+
   setupSensorDHT();
   setupSensorUltrasonic();
   setupSensorMPXH6300A();

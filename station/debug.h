@@ -2,5 +2,5 @@
 
 #include <Arduino.h>
 
-void debugMsg(const char* format ...);
+void debugMsg(bool printtime, const char* format, ...);
 
