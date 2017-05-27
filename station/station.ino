@@ -10,7 +10,9 @@ Conn* conn;
 char stationID[10];
 
 void setup() {
+  #ifdef DEBUG
   Serial.begin(115200);
+  #endif
   
   sprintf(stationID, "%d", ESP.getChipId());
   
