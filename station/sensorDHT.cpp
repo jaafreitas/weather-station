@@ -1,5 +1,6 @@
 #include "sensorDHT.h"
 #include "settings.h"
+#include "debug.h"
 
 extern "C" {
 #include "user_interface.h"
@@ -16,7 +17,7 @@ void sensorDHTRead(void *parg) {
 }
 
 void setupSensorDHT() {
-  os_timer_disarm(&sensorDHTTimer);  
+  os_timer_disarm(&sensorDHTTimer);
   os_timer_setfn(&sensorDHTTimer, sensorDHTRead, NULL);
   os_timer_arm(&sensorDHTTimer, SENSOR_DHT_READ_INTERVAL, true);
 }
@@ -33,13 +34,13 @@ void loopSensorDHT( CONN_NOTIFY  ) {
         notify("humidity", DHT.humidity);
         break;
       case DHTLIB_ERROR_CHECKSUM:
-        Serial.println("sensorDHTRead: Checksum error");
+        debugMsg("sensorDHTRead: Checksum error\n");
         break;
       case DHTLIB_ERROR_TIMEOUT:
-        Serial.println("sensorDHTRead: Time out error");
+        debugMsg("sensorDHTRead: Time out error\n");
         break;
       default:
-        Serial.println("sensorDHTRead: Unknown error");
+        debugMsg("sensorDHTRead: Unknown error\n");
         break;
     }
   }
@@ -146,7 +147,7 @@ int dht::_readSensor(uint8_t pin, uint8_t wakeupDelay)
 
     // REQUEST SAMPLE
     pinMode(pin, OUTPUT);
-    digitalWrite(pin, LOW); // T-be 
+    digitalWrite(pin, LOW); // T-be
     delay(wakeupDelay);
     digitalWrite(pin, HIGH);   // T-go
     delayMicroseconds(40);
@@ -183,7 +184,7 @@ int dht::_readSensor(uint8_t pin, uint8_t wakeupDelay)
         }
 
         if ((micros() - t) > 40)
-        { 
+        {
             bits[idx] |= mask;
         }
         mask >>= 1;
