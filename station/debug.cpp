@@ -9,7 +9,7 @@ void setupDebug() {
 #endif
 }
 
-String getISOTime(){
+String getISOTime() {
   static char isoTime[20];
   sprintf(isoTime, "%04d-%02d-%02d %02d:%02d:%02d", year(), month(), day(), hour(), minute(), second());
   return String(isoTime);

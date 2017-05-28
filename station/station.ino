@@ -11,15 +11,15 @@
 #include "sensorMPXH6300A.h"
 
 Conn* conn;
-char stationID[10];
+String stationID;
 
 void setup() {
   setupDebug();
 
-  debugMsg(false, "\n***** Station %s (%s, %s) [ESP Core %s (WeMos D1 mini)] *****\n", version, __DATE__, __TIME__, ESP.getCoreVersion().c_str());
-
-  sprintf(stationID, "%d", ESP.getChipId());
-
+  debugMsg(false, "\n***** %s *****\n", title());
+  
+  stationID = String(ESP.getChipId());
+  
   setupAlarm();
   conn = new Conn(stationID);
   setupNTPClient();
@@ -33,16 +33,16 @@ void setup() {
 void loop() {
   conn->loop();
   loopOTA();
-
-  loopSensorDHT([](const char* sensor, float value) {
+  
+  loopSensorDHT([](String sensor, float value) {
+    conn->notify(sensor, value);
+  });
+  
+  loopSensorUltrasonic([](String sensor, float value) {
     conn->notify(sensor, value);
   });
 
-  loopSensorUltrasonic([](const char* sensor, float value) {
-    conn->notify(sensor, value);
-  });
-
-  loopSensorMPXH6300A([](const char* sensor, float value) {
+  loopSensorMPXH6300A([](String sensor, float value) {
     conn->notify(sensor, value);
   });
 }
