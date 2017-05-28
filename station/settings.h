@@ -4,10 +4,12 @@
 
 //#define DEBUG
 
-#define WIFI_SSID "ssid"
-#define WIFI_PASSWORD "password"
 #define VREF_5V 4.82
 #define VREF 3.365
+
+#define WIFI_SSID "ssid"
+#define WIFI_PASSWORD "password"
+#define WIFI_AP_PASSWORD "password"
 
 #define MQTT_SERVER "mqtt_server"
 #define MQTT_PORT 1883

@@ -7,18 +7,21 @@
 WiFiClient wifiClient;
 
 void setupWiFi(char* _stationID) {
-  debugMsg(false, "\nConnecting station %s to SSID %s", _stationID, WIFI_SSID);
-
-  WiFi.mode(WIFI_STA);
+  debugMsg(false, "Starting WiFi Setup...\n", _stationID);
+  WiFi.mode(WIFI_AP_STA);
   WiFi.disconnect();
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
+  WiFi.softAP(_stationID, WIFI_AP_PASSWORD);
+  debugMsg(false, "Access Point %s started at IP address %s\n", _stationID, WiFi.softAPIP().toString().c_str());
+
+  debugMsg(false, "Connecting station %s to SSID %s", _stationID, WIFI_SSID);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     debugMsg(false, ".");
   }
   debugMsg(false, " Ok.\n");
-  
+
   debugMsg(false, "IP address: %s\n", WiFi.localIP().toString().c_str());
 }
 
@@ -38,7 +41,7 @@ Conn::Conn(char* stationID) {
   this->_stationID = stationID;
 
   setupWiFi(this->_stationID);
-  
+
   this->_PubSubClient = new PubSubClient(wifiClient);
   this->_PubSubClient->setServer(MQTT_SERVER, MQTT_PORT);
   this->_PubSubClient->setCallback(callbackMQTT);
@@ -50,14 +53,14 @@ void Conn::connect() {
       debugMsg(true, "Attempting MQTT connection on %s...", MQTT_SERVER);
       if (this->_PubSubClient->connect(this->_stationID)) {
         debugMsg(false, " Ok.\n");
-  
+
         // Once connected, publish an announcement...
         char topic[100];
-        
-        sprintf(topic, "station/%s/status", this->_stationID);        
+
+        sprintf(topic, "station/%s/status", this->_stationID);
         debugMsg(true, "-> %s: %s\n", topic, "on");
         this->_PubSubClient->publish(topic, "on");
-  
+
         // ... and resubscribe
         sprintf(topic, "station/%s/alarm", this->_stationID);
         this->_PubSubClient->subscribe(topic);
