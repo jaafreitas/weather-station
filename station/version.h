@@ -1,7 +1,5 @@
 #pragma once
 
-#define VERSION_MAJOR 1
-
 // Example of __DATE__ string: "Jul 27 2012"
 //                              01234567890
 
@@ -103,10 +101,16 @@
 
 #endif
 
-// Version will look like 1.2016.1231.2359 for ISO 8601 date 2017-12-31 23:59:59.
+// Version examples:
+//   2016-12-31 23:59:59 -> 2016.12.31.2359
+//   2017-01-01 00:00:00 -> 2017.01.01.0000 or 2017.1.1.0
+//   2017-01-01 00:01:00 -> 2017.01.01.0001 or 2017.1.1.1
+//   2017-01-01 01:00:00 -> 2017.01.01.0100 or 2017.1.1.100
+//   2017-01-01 01:01:00 -> 2017.01.01.0101 or 2017.1.1.101
+//   2017-01-01 01:11:00 -> 2017.01.01.0111 or 2017.1.1.111
+//   2017-01-01 10:01:00 -> 2017.01.01.1001 or 2017.1.1.1001
+
 const char version[] = {
-  VERSION_MAJOR_INIT,
-  '.',
   BUILD_YEAR_CH0,
   BUILD_YEAR_CH1,
   BUILD_YEAR_CH2,
@@ -114,6 +118,7 @@ const char version[] = {
   '.',
   BUILD_MONTH_CH0,
   BUILD_MONTH_CH1,
+  '.',
   BUILD_DAY_CH0,
   BUILD_DAY_CH1,
   '.',
