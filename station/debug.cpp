@@ -1,18 +1,13 @@
 #include <TimeLib.h>
 #include "debug.h"
 #include "settings.h"
+#include "ntp.h"
 
 void setupDebug() {
 #ifdef DEBUG
   Serial.begin(115200);
   //Serial.setDebugOutput(true);
 #endif
-}
-
-String getISOTime() {
-  static char isoTime[20];
-  sprintf(isoTime, "%04d-%02d-%02d %02d:%02d:%02d", year(), month(), day(), hour(), minute(), second());
-  return String(isoTime);
 }
 
 void debugMsg(bool printtime, const char* format, ...) {

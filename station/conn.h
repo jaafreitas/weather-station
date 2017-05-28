@@ -3,7 +3,8 @@
 #include <Arduino.h>
 #include <PubSubClient.h>
 
-#define CONN_NOTIFY void (*notify)(String, float)
+#define CONN_NOTIFY_SENSOR void (*notify)(String, float)
+#define CONN_NOTIFY void (*notify)(String, String, bool)
 
 class Conn {
   public:

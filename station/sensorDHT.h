@@ -5,7 +5,7 @@
 
 void setupSensorDHT();
 
-void loopSensorDHT( CONN_NOTIFY );
+void loopSensorDHT( CONN_NOTIFY_SENSOR );
 
 //  AUTHOR: Rob Tillaart
 // VERSION: 0.1.14

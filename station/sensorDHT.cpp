@@ -22,7 +22,7 @@ void setupSensorDHT() {
   os_timer_arm(&sensorDHTTimer, SENSOR_DHT_READ_INTERVAL, true);
 }
 
-void loopSensorDHT( CONN_NOTIFY  ) {
+void loopSensorDHT( CONN_NOTIFY_SENSOR  ) {
   if (canReadSensorDHT) {
     canReadSensorDHT = false;
 

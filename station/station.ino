@@ -31,7 +31,12 @@ void setup() {
 }
 
 void loop() {
+  loopNTPClient([](String topic, String payload, bool retained) {
+    conn->notify(topic, payload, retained);
+  });
+  
   conn->loop();
+  
   loopOTA();
   
   loopSensorDHT([](String sensor, float value) {

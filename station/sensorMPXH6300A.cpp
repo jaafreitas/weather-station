@@ -21,7 +21,7 @@ void setupSensorMPXH6300A() {
   os_timer_arm(&sensorMPXH6300ATimer, SENSOR_MPXH6300A_READ_INTERVAL, true);
 }
 
-void loopSensorMPXH6300A( CONN_NOTIFY  ) {
+void loopSensorMPXH6300A( CONN_NOTIFY_SENSOR  ) {
   if (canReadSensorMPXH6300A) {
     canReadSensorMPXH6300A = false;
 

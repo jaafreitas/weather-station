@@ -7,6 +7,8 @@
 
 WiFiClient wifiClient;
 
+extern String uptime;
+
 void setupWiFi(const char* _stationID) {
   debugMsg(false, "Starting WiFi Setup...\n", _stationID);
   WiFi.mode(WIFI_AP_STA);
@@ -56,8 +58,10 @@ void Conn::connect() {
         debugMsg(false, " Ok.\n");
   
         // Once connected, publish announcements...
-        notify("status", "on");
         notify("version", version, true);
+        if (uptime.length() > 0) {
+          notify("uptime", uptime, true);
+        }
 
         // ... and resubscribe
         listen("alarm");

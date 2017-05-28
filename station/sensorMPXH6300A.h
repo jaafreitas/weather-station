@@ -5,5 +5,5 @@
 
 void setupSensorMPXH6300A();
 
-void loopSensorMPXH6300A( CONN_NOTIFY );
+void loopSensorMPXH6300A( CONN_NOTIFY_SENSOR );
 

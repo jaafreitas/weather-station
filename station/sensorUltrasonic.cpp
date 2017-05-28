@@ -33,7 +33,7 @@ void setupSensorUltrasonic() {
   os_timer_arm(&sensorUltrasonicTimer, SENSOR_ULTRASONIC_READ_INTERVAL, true);
 }
 
-void loopSensorUltrasonic( CONN_NOTIFY  ) {
+void loopSensorUltrasonic( CONN_NOTIFY_SENSOR  ) {
   if (canReadSensorUltrasonic) {
     canReadSensorUltrasonic = false;
 

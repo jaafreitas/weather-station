@@ -3,6 +3,21 @@
 #include <WiFiUdp.h>
 #include "settings.h"
 #include "debug.h"
+#include "conn.h"
+
+extern "C" {
+#include "user_interface.h"
+}
+
+String uptime = "";
+
+os_timer_t NTPClientTimer;
+
+bool canReadNTPClient = true;
+
+void NTPClientRead(void *parg) {
+  canReadNTPClient = true;
+}
 
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP Udp;
@@ -34,8 +49,7 @@ void sendNTPpacket(IPAddress &address) {
 }
 
 time_t getNTPTime() {
-  // I don't know why, but it crashes if we use time functions during update.
-  debugMsg(false, "NTP time sync... ");
+  debugMsg(true, "NTP time sync... ");
 
   IPAddress timeServerIP;
   // Get a random server from the pool.
@@ -71,9 +85,37 @@ time_t getNTPTime() {
   return 0;
 }
 
+String getISOTime() {
+  static char isoTime[20];
+  sprintf(isoTime, "%04d-%02d-%02d %02d:%02d:%02d", year(), month(), day(), hour(), minute(), second());
+  return String(isoTime);
+}
+
+void setNTPTime() {
+  time_t NTPTime = getNTPTime();
+  if (NTPTime) {
+    canReadNTPClient = false;
+    setTime(NTPTime);
+    if (uptime.length() == 0) {
+      uptime = getISOTime();
+    }
+  }
+}
+
 void setupNTPClient() {
   Udp.begin(NTP_LOCALPORT);
-  setSyncProvider(getNTPTime);
-  setSyncInterval(NTP_INTERVAL);
+  setNTPTime();
+  // We won't use setSyncProvider and set SyncInterval because we
+  // want to have full control of it.
+  os_timer_disarm(&NTPClientTimer);
+  os_timer_setfn(&NTPClientTimer, NTPClientRead, NULL);
+  os_timer_arm(&NTPClientTimer, NTP_INTERVAL, true);
+}
+
+void loopNTPClient( CONN_NOTIFY  ) {
+  if (canReadNTPClient) {
+    setNTPTime();
+    notify("datetime", getISOTime(), false);
+  }
 }
 
