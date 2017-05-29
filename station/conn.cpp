@@ -1,4 +1,5 @@
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
 #include "settings.h"
 #include "debug.h"
 #include "alarm.h"
@@ -26,6 +27,13 @@ void setupWiFi(const char* _stationID) {
   debugMsg(false, " Ok.\n");
   
   debugMsg(false, "IP address: %s\n", WiFi.localIP().toString().c_str());
+
+  debugMsg(false, "Starting mDNS... ", _stationID);
+  if (MDNS.begin(_stationID)) {
+    debugMsg(false, " Ok.\n");    
+  } else {
+    debugMsg(false, " Error!.\n");    
+  }
 }
 
 void callbackMQTT(char* topic, byte* payload, unsigned int length) {
