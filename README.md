@@ -89,7 +89,7 @@ Sistema de monitoramento remoto dos rios do município de Itajaí. Disponível e
 
 ### 1. Imagem do protótipo:
 
-#### ![Prototype](https://github.com/jaafreitas/weather-station/blob/master/weather-station.jpg)
+#### ![Prototype](weather-station.jpg)
 
 ### 2. Exemplo de informação de depuração da estação meteorológica:
 <pre>
@@ -117,7 +117,7 @@ IP address: 192.168.1.28
 </pre>
 ### 3. Exemplo de informações recebidas a partir da comunicação MQTT:
 
-![MQTT](https://github.com/jaafreitas/weather-station/blob/master/mqtt-example.png)
+![MQTT](mqtt-example.png)
 
 ### 4. Teste de funcionamento do sensor de pressão MPXH6300A:
 <pre>
