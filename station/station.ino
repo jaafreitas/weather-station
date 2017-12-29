@@ -9,6 +9,7 @@
 #include "sensorDHT.h"
 #include "sensorUltrasonic.h"
 #include "sensorMPXH6300A.h"
+#include "sensorBMP280.h"
 
 Conn* conn;
 String stationID;
@@ -28,6 +29,7 @@ void setup() {
   setupSensorDHT();
   setupSensorUltrasonic();
   setupSensorMPXH6300A();
+  setupSensorBMP280();  
 }
 
 void loop() {
@@ -50,5 +52,9 @@ void loop() {
   loopSensorMPXH6300A([](String sensor, float value) {
     conn->notify(sensor, value);
   });
+
+  loopSensorBMP280([](String sensor, float value) {
+    conn->notify(sensor, value);
+  });  
 }
 
