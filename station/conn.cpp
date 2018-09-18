@@ -10,6 +10,8 @@ WiFiClient wifiClient;
 
 extern String uptime;
 
+long lastReconnectAttempt = -10000;
+
 void setupWiFi(const char* _stationID) {
   debugMsg(false, "Starting WiFi Setup...\n", _stationID);
   WiFi.mode(WIFI_AP_STA);
@@ -60,24 +62,25 @@ Conn::Conn(String stationID) {
 
 void Conn::connect() {
   if (!this->_PubSubClient->connected()) {
-    while (!this->_PubSubClient->connected()) {
-      debugMsg(true, "Attempting MQTT connection on %s...", MQTT_SERVER);
-      if (this->_PubSubClient->connect(this->_stationID.c_str())) {
-        debugMsg(false, " Ok.\n");
+      if (millis() - lastReconnectAttempt > 10000) {
+        lastReconnectAttempt = millis();
+        debugMsg(true, "Attempting MQTT connection on %s...", MQTT_SERVER);
+        if (this->_PubSubClient->connect(this->_stationID.c_str())) {
+          lastReconnectAttempt = 0;
+          debugMsg(false, " Ok.\n");
+    
+          // Once connected, publish announcements...
+          notify("version", version, true);
+          if (uptime.length() > 0) {
+            notify("uptime", uptime, true);
+          }
   
-        // Once connected, publish announcements...
-        notify("version", version, true);
-        if (uptime.length() > 0) {
-          notify("uptime", uptime, true);
+          // ... and resubscribe
+          listen("alarm");
+        } else {
+          debugMsg(false, " ERROR: %d. Trying again in 10 seconds.\n", this->_PubSubClient->state());
         }
-
-        // ... and resubscribe
-        listen("alarm");
-      } else {
-        debugMsg(false, " ERROR: %d. Trying again in 10 seconds.\n", this->_PubSubClient->state());
-        delay(10000);
       }
-    }
   }
 };
 
@@ -92,18 +95,18 @@ String Conn::fullTopic(String topic) {
 
 void Conn::notify(String topic, String payload, bool retained) {
   debugMsg(true, "-> %s: %s\n", fullTopic(topic).c_str(), payload.c_str());
-  this->_PubSubClient->publish(fullTopic(topic).c_str(), payload.c_str());
+  this->_PubSubClient->publish(fullTopic(topic).c_str(), payload.c_str(), retained);
 }
 
 void Conn::notify(String sensor, float value) {
   static char payload[5];
   dtostrf(value, 5, 2, payload);
 
-  notify("sensor/" + sensor, String(payload), false);  
+  notify("sensor/" + sensor, String(payload), false);
 }
 
 void Conn::listen(String topic) {
   debugMsg(true, "++ %s\n", fullTopic(topic).c_str());
-  this->_PubSubClient->subscribe(fullTopic(topic).c_str());
+  this->_PubSubClient->subscribe(fullTopic(topic).c_str(), 1);
 }
 
