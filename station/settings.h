@@ -4,8 +4,8 @@
 
 //#define DEBUG
 
-#define VREF_5V 4.82
-#define VREF 3.365
+#define VREF_5V 4.78
+#define VREF 3.28
 
 #define WIFI_SSID "ssid"
 #define WIFI_PASSWORD "password"

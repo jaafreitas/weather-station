@@ -33,7 +33,7 @@ void loopSensorMPXH6300A( CONN_NOTIFY_SENSOR  ) {
     }
     sensorValue /= 1000;
 
-    float volts = (sensorValue / 1023.0) * VREF;
+    float volts = (sensorValue / 992.0) * VREF;
     float hPa = 10 * (volts + 0.00353 * VREF_5V) / (0.00318 * VREF_5V);
 
     notify("MPXH6300A", hPa);
