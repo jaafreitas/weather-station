@@ -129,10 +129,9 @@ const char version[] = {
   '\0'
 };
 
-static char* title() {
+static char* title(String hostname) {
   static char title[100];
-  sprintf(title, "Station %s (%s, %s) [ESP Core %s (WeMos D1 mini)]",
-    version, __DATE__, __TIME__, ESP.getCoreVersion().c_str());
+  sprintf(title, "%s %s (%s, %s) [ESP Core %s]",
+    hostname.c_str(), version, __DATE__, __TIME__, ESP.getCoreVersion().c_str());
   return title;
 }
-

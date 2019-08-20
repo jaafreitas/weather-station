@@ -5,5 +5,4 @@
 
 void setupSensorBMP280();
 
-void loopSensorBMP280( CONN_NOTIFY_SENSOR );
-
+void loopSensorBMP280(Conn* conn);

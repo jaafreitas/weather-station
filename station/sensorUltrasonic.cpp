@@ -33,7 +33,7 @@ void setupSensorUltrasonic() {
   os_timer_arm(&sensorUltrasonicTimer, SENSOR_ULTRASONIC_READ_INTERVAL, true);
 }
 
-void loopSensorUltrasonic( CONN_NOTIFY_SENSOR  ) {
+void loopSensorUltrasonic(Conn* conn) {
   if (canReadSensorUltrasonic) {
     canReadSensorUltrasonic = false;
 
@@ -55,8 +55,7 @@ void loopSensorUltrasonic( CONN_NOTIFY_SENSOR  ) {
     distance = (duration / 2) / PACE_OF_SOUND;
 
     if ((distance > MIN_RANGE) && (distance < MAX_RANGE)) {
-      notify("ultrasonic", distance);
+      conn->notify_sensor("HC-SR04/distance", distance);
     }
   }
 }
-

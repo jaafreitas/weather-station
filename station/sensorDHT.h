@@ -5,7 +5,7 @@
 
 void setupSensorDHT();
 
-void loopSensorDHT( CONN_NOTIFY_SENSOR );
+void loopSensorDHT(Conn* conn);
 
 //  AUTHOR: Rob Tillaart
 // VERSION: 0.1.14
@@ -52,4 +52,3 @@ private:
     uint8_t bits[5];  // buffer to receive data
     int _readSensor(uint8_t pin, uint8_t wakeupDelay);
 };
-

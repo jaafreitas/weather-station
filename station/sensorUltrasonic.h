@@ -5,5 +5,4 @@
 
 void setupSensorUltrasonic();
 
-void loopSensorUltrasonic( CONN_NOTIFY_SENSOR );
-
+void loopSensorUltrasonic(Conn* conn);

@@ -17,9 +17,9 @@ String stationID;
 void setup() {
   setupDebug();
 
-  debugMsg(false, "\n***** %s *****\n", title());
-  
-  stationID = String(ESP.getChipId());
+  stationID = String(STATION_PREFIX) + String(ESP.getChipId());
+
+  debugMsg("\n***** %s *****\n", title(stationID));
   
   setupAlarm();
   conn = new Conn(stationID);
@@ -33,28 +33,14 @@ void setup() {
 }
 
 void loop() {
-  loopNTPClient([](String topic, String payload, bool retained) {
-    conn->notify(topic, payload, retained);
-  });
+  loopNTPClient(conn);
   
   conn->loop();
   
   loopOTA();
   
-  loopSensorDHT([](String sensor, float value) {
-    conn->notify(sensor, value);
-  });
-  
-  loopSensorUltrasonic([](String sensor, float value) {
-    conn->notify(sensor, value);
-  });
-
-  loopSensorMPXH6300A([](String sensor, float value) {
-    conn->notify(sensor, value);
-  });
-
-  loopSensorBMP280([](String sensor, float value) {
-    conn->notify(sensor, value);
-  });  
+  loopSensorDHT(conn);  
+  loopSensorUltrasonic(conn);
+  loopSensorMPXH6300A(conn);
+  loopSensorBMP280(conn);
 }
-

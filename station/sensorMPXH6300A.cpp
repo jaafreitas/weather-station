@@ -21,7 +21,7 @@ void setupSensorMPXH6300A() {
   os_timer_arm(&sensorMPXH6300ATimer, SENSOR_MPXH6300A_READ_INTERVAL, true);
 }
 
-void loopSensorMPXH6300A( CONN_NOTIFY_SENSOR  ) {
+void loopSensorMPXH6300A(Conn* conn) {
   if (canReadSensorMPXH6300A) {
     canReadSensorMPXH6300A = false;
 
@@ -36,7 +36,8 @@ void loopSensorMPXH6300A( CONN_NOTIFY_SENSOR  ) {
     float volts = (sensorValue / 992.0) * VREF;
     float hPa = 10 * (volts + 0.00353 * VREF_5V) / (0.00318 * VREF_5V);
 
-    notify("MPXH6300A", hPa);
+    if (hPa > 500.0) {
+      conn->notify_sensor("MPXH6300A/pressure", hPa);
+    }
   }
 }
-

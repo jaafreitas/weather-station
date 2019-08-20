@@ -15,13 +15,12 @@ ESP8266HTTPUpdateServer httpUpdater;
 void setupOTA() {
   const char* update_path = "/firmware";
 
-  debugMsg(true, "Starting Over the Air updater at http://%s%s ... ", WiFi.localIP().toString().c_str(), update_path);
+  debugMsg("Starting Over the Air updater at http://%s%s ... ", WiFi.localIP().toString().c_str(), update_path);
   httpUpdater.setup(&httpServer, update_path);
   httpServer.begin();
-  debugMsg(false, "Ok.\n");
+  debugMsg("Ok.\n");
 }
 
 void loopOTA() {
   httpServer.handleClient();
 }
-

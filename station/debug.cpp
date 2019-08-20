@@ -1,21 +1,17 @@
-#include <TimeLib.h>
+#include "src/Time/TimeLib.h"
 #include "debug.h"
 #include "settings.h"
 #include "ntp.h"
 
 void setupDebug() {
 #ifdef DEBUG
-  Serial.begin(115200);
+  Serial.begin(74880);
   //Serial.setDebugOutput(true);
 #endif
 }
 
-void debugMsg(bool printtime, const char* format, ...) {
+void debugMsg(const char* format, ...) {
 #ifdef DEBUG
-  if (printtime) {
-    Serial.print(getISOTime() + " ");
-  }
-
   char str[200];
 
   va_list args;
@@ -27,4 +23,3 @@ void debugMsg(bool printtime, const char* format, ...) {
   va_end(args);
 #endif
 }
-

@@ -4,5 +4,4 @@
 
 void setupDebug();
 
-void debugMsg(bool printtime, const char* format, ...);
-
+void debugMsg(const char* format, ...);

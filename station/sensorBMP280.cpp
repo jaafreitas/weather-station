@@ -6,7 +6,7 @@ extern "C" {
 #include "user_interface.h"
 }
 
-Adafruit_BMP280 bme;
+Adafruit_BMP280 bmp;
 
 os_timer_t sensorBMP280Timer;
 
@@ -17,7 +17,7 @@ void sensorBMP280Read(void *parg) {
 }
 
 void setupSensorBMP280() {
-  if (!bme.begin()) {  
+  if (!bmp.begin()) {  
     Serial.println("BMP280 sensor not connected!");
   } else {
     os_timer_disarm(&sensorBMP280Timer);
@@ -26,13 +26,13 @@ void setupSensorBMP280() {
   }
 }
 
-void loopSensorBMP280( CONN_NOTIFY_SENSOR  ) {
+void loopSensorBMP280(Conn* conn) {
   if (canReadSensorBMP280) {
     canReadSensorBMP280 = false;
 
-    float hPa = bme.readPressure() / 100;
+    float hPa = bmp.readPressure() / 100;
 
-    notify("BMP280", hPa);
+    conn->notify_sensor("BMP280/pressure", hPa);
+    conn->notify_sensor("BMP280/temperature", bmp.readTemperature());
   }
 }
-

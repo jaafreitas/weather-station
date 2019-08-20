@@ -10,31 +10,37 @@ WiFiClient wifiClient;
 
 extern String uptime;
 
-long lastReconnectAttempt = -10000;
+long lastMQTTReconnectAttempt = -MQTT_CONNECTION_RETRY;
 
 void setupWiFi(const char* _stationID) {
-  debugMsg(false, "Starting WiFi Setup...\n", _stationID);
+  debugMsg("Starting WiFi Setup...\n", _stationID);
+  WiFi.setAutoConnect(true);
+  WiFi.setAutoReconnect(true);
+  WiFi.setSleepMode(WIFI_NONE_SLEEP);
   WiFi.mode(WIFI_AP_STA);
+  WiFi.hostname(_stationID);
   WiFi.disconnect();
 
   WiFi.softAP(_stationID, WIFI_AP_PASSWORD);
-  debugMsg(false, "Access Point %s started at IP address %s\n", _stationID, WiFi.softAPIP().toString().c_str());
-    
-  debugMsg(false, "Connecting station %s to SSID %s", _stationID, WIFI_SSID);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    debugMsg(false, ".");
-  }
-  debugMsg(false, " Ok.\n");
-  
-  debugMsg(false, "IP address: %s\n", WiFi.localIP().toString().c_str());
+  debugMsg("Access Point %s started at IP address %s\n", _stationID, WiFi.softAPIP().toString().c_str());  
 
-  debugMsg(false, "Starting mDNS... ", _stationID);
+  debugMsg("Connecting %s to SSID %s", _stationID, WIFI_SSID);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  int retries = 0;
+  while ((WiFi.status() != WL_CONNECTED) and (retries < WIFI_CONNECTION_RETRIES)) {
+    delay(500);
+    retries++;
+    debugMsg(".");
+  }
+  debugMsg(" Ok.\n");
+
+  debugMsg("IP address set to %s\n", WiFi.localIP().toString().c_str());
+
+  debugMsg("Starting mDNS... ", _stationID);
   if (MDNS.begin(_stationID)) {
-    debugMsg(false, " Ok.\n");    
+    debugMsg(" Ok.\n");    
   } else {
-    debugMsg(false, " Error!.\n");    
+    debugMsg(" Error!.\n");    
   }
 }
 
@@ -43,7 +49,7 @@ void callbackMQTT(char* topic, byte* payload, unsigned int length) {
   memcpy(c_payload, payload, length);
   c_payload[length] = '\0';
 
-  debugMsg(true, "<- %s: %s\n", topic, c_payload);
+  debugMsg("<- %s: %s\n", topic, c_payload);
 
   if (String(topic).endsWith("alarm")) {
     alarm(String(c_payload).toInt());
@@ -62,23 +68,19 @@ Conn::Conn(String stationID) {
 
 void Conn::connect() {
   if (!this->_PubSubClient->connected()) {
-      if (millis() - lastReconnectAttempt > 10000) {
-        lastReconnectAttempt = millis();
-        debugMsg(true, "Attempting MQTT connection on %s...", MQTT_SERVER);
-        if (this->_PubSubClient->connect(this->_stationID.c_str())) {
-          lastReconnectAttempt = 0;
-          debugMsg(false, " Ok.\n");
+      if (millis() - lastMQTTReconnectAttempt > MQTT_CONNECTION_RETRY) {
+        lastMQTTReconnectAttempt = millis();
+        debugMsg("Attempting MQTT connection to %s...", MQTT_SERVER);
+        if (this->_PubSubClient->connect(this->_stationID.c_str(), MQTT_USER, MQTT_PASSWORD)) {
+          debugMsg(" Ok.\n");
     
           // Once connected, publish announcements...
-          notify("version", version, true);
-          if (uptime.length() > 0) {
-            notify("uptime", uptime, true);
-          }
+          this->notify_topic("version", version, true);
   
           // ... and resubscribe
           listen("alarm");
         } else {
-          debugMsg(false, " ERROR: %d. Trying again in 10 seconds.\n", this->_PubSubClient->state());
+          debugMsg(" ERROR: %d. Trying again later.\n", this->_PubSubClient->state());
         }
       }
   }
@@ -90,23 +92,22 @@ void Conn::loop() {
 }
 
 String Conn::fullTopic(String topic) {
-  return "station/" + this->_stationID + "/" + topic;
+  return String(MQTT_TOPIC_PREFIX) + "station/" + this->_stationID + "/" + topic;
 }
 
-void Conn::notify(String topic, String payload, bool retained) {
-  debugMsg(true, "-> %s: %s\n", fullTopic(topic).c_str(), payload.c_str());
+void Conn::notify_topic(String topic, String payload, bool retained) {
+  debugMsg("-> %s: %s\n", fullTopic(topic).c_str(), payload.c_str());
   this->_PubSubClient->publish(fullTopic(topic).c_str(), payload.c_str(), retained);
 }
 
-void Conn::notify(String sensor, float value) {
+void Conn::notify_sensor(String sensor, float value) {
   static char payload[5];
   dtostrf(value, 5, 2, payload);
 
-  notify("sensor/" + sensor, String(payload), false);
+  this->notify_topic("sensor/" + sensor, String(payload), false);
 }
 
 void Conn::listen(String topic) {
-  debugMsg(true, "++ %s\n", fullTopic(topic).c_str());
+  debugMsg("++ %s\n", fullTopic(topic).c_str());
   this->_PubSubClient->subscribe(fullTopic(topic).c_str(), 1);
 }
-

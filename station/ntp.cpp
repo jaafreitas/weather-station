@@ -1,13 +1,9 @@
-#include <TimeLib.h>
+#include "src/Time/TimeLib.h"
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include "settings.h"
 #include "debug.h"
 #include "conn.h"
-
-extern "C" {
-#include "user_interface.h"
-}
 
 String uptime = "";
 
@@ -49,7 +45,7 @@ void sendNTPpacket(IPAddress &address) {
 }
 
 time_t getNTPTime() {
-  debugMsg(true, "NTP time sync... ");
+  debugMsg("NTP time sync... ");
 
   IPAddress timeServerIP;
   // Get a random server from the pool.
@@ -76,35 +72,37 @@ time_t getNTPTime() {
 
       // Unix time starts on Jan 1 1970. In seconds, that's 2208988800:
       const unsigned long seventyYears = 2208988800UL;
-      debugMsg(false, "Ok.\n");
+      debugMsg("Ok.\n");
 
       return secsSince1900 - seventyYears;
     }
   }
-  debugMsg(false, "No NTP Response.\n");
+  debugMsg("No NTP Response.\n");
   return 0;
 }
 
 String getISOTime() {
   static char isoTime[20];
-  sprintf(isoTime, "%04d-%02d-%02d %02d:%02d:%02d", year(), month(), day(), hour(), minute(), second());
+  time_t t = now();
+  sprintf(isoTime, "%04d-%02d-%02dT%02d:%02d:%02d", year(t), month(t), day(t), hour(t), minute(t), second(t));
   return String(isoTime);
 }
 
-void setNTPTime() {
+bool setNTPTime() {
   time_t NTPTime = getNTPTime();
   if (NTPTime) {
-    canReadNTPClient = false;
+    NTPTime = NTPTime + TZ_OFFSET;    
     setTime(NTPTime);
+    debugMsg("Date/Time set to %s\n", getISOTime().c_str());
     if (uptime.length() == 0) {
       uptime = getISOTime();
     }
   }
+  return NTPTime;
 }
 
 void setupNTPClient() {
   Udp.begin(NTP_LOCALPORT);
-  setNTPTime();
   // We won't use setSyncProvider and set SyncInterval because we
   // want to have full control of it.
   os_timer_disarm(&NTPClientTimer);
@@ -112,10 +110,12 @@ void setupNTPClient() {
   os_timer_arm(&NTPClientTimer, NTP_INTERVAL, true);
 }
 
-void loopNTPClient( CONN_NOTIFY  ) {
+void loopNTPClient(Conn* conn) {
   if (canReadNTPClient) {
-    setNTPTime();
-    notify("datetime", getISOTime(), false);
+    canReadNTPClient = false;
+    if (setNTPTime()) {
+      conn->notify_topic("datetime", getISOTime(), false);
+      conn->notify_topic("uptime", uptime, true);
+    }
   }
 }
-

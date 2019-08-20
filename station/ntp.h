@@ -5,7 +5,6 @@
 
 void setupNTPClient();
 
-void loopNTPClient( CONN_NOTIFY );
+void loopNTPClient(Conn* conn);
 
 String getISOTime();
-

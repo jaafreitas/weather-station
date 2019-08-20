@@ -22,7 +22,7 @@ void setupSensorDHT() {
   os_timer_arm(&sensorDHTTimer, SENSOR_DHT_READ_INTERVAL, true);
 }
 
-void loopSensorDHT( CONN_NOTIFY_SENSOR  ) {
+void loopSensorDHT(Conn* conn) {
   if (canReadSensorDHT) {
     canReadSensorDHT = false;
 
@@ -30,17 +30,17 @@ void loopSensorDHT( CONN_NOTIFY_SENSOR  ) {
     switch (chk)
     {
       case DHTLIB_OK:
-        notify("temperature", DHT.temperature);
-        notify("humidity", DHT.humidity);
+        conn->notify_sensor("DHT11/temperature", DHT.temperature);
+        conn->notify_sensor("DHT11/humidity", DHT.humidity);
         break;
       case DHTLIB_ERROR_CHECKSUM:
-        debugMsg(true, "sensorDHTRead: Checksum error\n");
+        debugMsg("sensorDHTRead: Checksum error\n");
         break;
       case DHTLIB_ERROR_TIMEOUT:
-        debugMsg(true, "sensorDHTRead: Time out error\n");
+        debugMsg("sensorDHTRead: Time out error\n");
         break;
       default:
-        debugMsg(true, "sensorDHTRead: Unknown error\n");
+        debugMsg("sensorDHTRead: Unknown error\n");
         break;
     }
   }
@@ -199,4 +199,3 @@ int dht::_readSensor(uint8_t pin, uint8_t wakeupDelay)
 
     return DHTLIB_OK;
 }
-
