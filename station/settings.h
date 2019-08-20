@@ -28,7 +28,8 @@ static const uint16_t NTP_LOCALPORT = 2390;
 static const unsigned long NTP_INTERVAL = 1 * 60 * 60 * 1000; // Every 1 hour (in milliseconds)
 static const unsigned long TZ_OFFSET = (-3 * 60 * 60); // in seconds.
 
-static const uint8_t ALARM_LED_PIN = D4;
+static const uint8_t ALARM_PIN = D5;
+static const uint8_t STATUS_PIN = D4; // LED_BUILTIN
 
 static const uint8_t SENSOR_BMP280_SCK_PIN = D1;
 static const uint8_t SENSOR_BMP280_SDI_PIN = D2;

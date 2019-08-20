@@ -2,12 +2,14 @@
 #include "settings.h"
 
 void setupAlarm() {
-  pinMode(ALARM_LED_PIN, OUTPUT);
+  pinMode(ALARM_PIN, OUTPUT);
+  digitalWrite(ALARM_PIN, LOW);
+
+  pinMode(STATUS_PIN, OUTPUT);
   // HIGH means OFF on ESP-12E.
-  digitalWrite(ALARM_LED_PIN, HIGH);
+  digitalWrite(STATUS_PIN, HIGH);
 }
 
 void alarm(bool value) {
-  digitalWrite(ALARM_LED_PIN, !value);
+  digitalWrite(ALARM_PIN, value);
 }
-
