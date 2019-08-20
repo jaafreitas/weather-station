@@ -33,12 +33,11 @@ void setup() {
 }
 
 void loop() {
-  loopNTPClient(conn);
-  
   conn->loop();
   
   loopOTA();
   
+  loopNTPClient(conn);
   loopSensorDHT(conn);  
   loopSensorUltrasonic(conn);
   loopSensorMPXH6300A(conn);
