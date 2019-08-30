@@ -10,6 +10,7 @@
 #include "sensorUltrasonic.h"
 #include "sensorMPXH6300A.h"
 #include "sensorBMP280.h"
+#include "sensorVL53L0X.h"
 
 Conn* conn;
 String stationID;
@@ -29,7 +30,8 @@ void setup() {
   setupSensorDHT();
   setupSensorUltrasonic();
   setupSensorMPXH6300A();
-  setupSensorBMP280();  
+  setupSensorBMP280();
+  setupSensorVL53L0X();
 }
 
 void loop() {
@@ -42,4 +44,5 @@ void loop() {
   loopSensorUltrasonic(conn);
   loopSensorMPXH6300A(conn);
   loopSensorBMP280(conn);
+  loopSensorVL53L0X(conn);
 }

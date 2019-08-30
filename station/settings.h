@@ -35,6 +35,10 @@ static const uint8_t SENSOR_BMP280_SCK_PIN = D1;
 static const uint8_t SENSOR_BMP280_SDI_PIN = D2;
 static const unsigned long SENSOR_BMP280_READ_INTERVAL = 1000; // Every second.
 
+static const uint8_t SENSOR_VL53L0X_SCL_PIN = D1;
+static const uint8_t SENSOR_VL53L0X_SDA_PIN = D2;
+static const unsigned long SENSOR_VL53L0X_READ_INTERVAL = 1000; // Every second.
+
 static const uint8_t SENSOR_DHT_PIN = D3;
 static const unsigned long SENSOR_DHT_READ_INTERVAL = 60 * 1000; // Every minute.
 #define SENSOR_DHTTYPE DHT11
