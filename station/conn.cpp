@@ -13,7 +13,7 @@ extern String uptime;
 long lastMQTTReconnectAttempt = -MQTT_CONNECTION_RETRY;
 
 void setupWiFi(const char* _stationID) {
-  debugMsg("Starting WiFi Setup...\n", _stationID);
+  debugMsg("Starting WiFi Setup...\n");
   WiFi.setAutoConnect(true);
   WiFi.setAutoReconnect(true);
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
