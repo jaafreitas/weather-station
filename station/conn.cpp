@@ -84,7 +84,7 @@ void Conn::connect() {
         }
       }
   }
-};
+}
 
 void Conn::loop() {
   this->connect();

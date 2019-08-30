@@ -1,4 +1,3 @@
-#include <Esp.h>
 #include "settings.h"
 #include "debug.h"
 #include "version.h"
