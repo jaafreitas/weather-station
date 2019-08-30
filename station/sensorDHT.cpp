@@ -10,16 +10,22 @@ dht DHT;
 
 os_timer_t sensorDHTTimer;
 
-bool canReadSensorDHT = true;
+bool canReadSensorDHT = false;
 
 void sensorDHTRead(void *parg) {
   canReadSensorDHT = true;
 }
 
 void setupSensorDHT() {
-  os_timer_disarm(&sensorDHTTimer);
-  os_timer_setfn(&sensorDHTTimer, sensorDHTRead, NULL);
-  os_timer_arm(&sensorDHTTimer, SENSOR_DHT_READ_INTERVAL, true);
+  int chk = DHT.read11(SENSOR_DHT_PIN);
+  if (chk != DHTLIB_OK) {
+    Serial.println("DHT11 sensor not connected!");
+  } else {
+    canReadSensorDHT = true;
+    os_timer_disarm(&sensorDHTTimer);
+    os_timer_setfn(&sensorDHTTimer, sensorDHTRead, NULL);
+    os_timer_arm(&sensorDHTTimer, SENSOR_DHT_READ_INTERVAL, true);
+  }
 }
 
 void loopSensorDHT(Conn* conn) {
@@ -27,21 +33,9 @@ void loopSensorDHT(Conn* conn) {
     canReadSensorDHT = false;
 
     int chk = DHT.read11(SENSOR_DHT_PIN);
-    switch (chk)
-    {
-      case DHTLIB_OK:
-        conn->notify_sensor("DHT11/temperature", DHT.temperature);
-        conn->notify_sensor("DHT11/humidity", DHT.humidity);
-        break;
-      case DHTLIB_ERROR_CHECKSUM:
-        debugMsg("sensorDHTRead: Checksum error\n");
-        break;
-      case DHTLIB_ERROR_TIMEOUT:
-        debugMsg("sensorDHTRead: Time out error\n");
-        break;
-      default:
-        debugMsg("sensorDHTRead: Unknown error\n");
-        break;
+    if (chk == DHTLIB_OK) {
+      conn->notify_sensor("DHT11/temperature", DHT.temperature);
+      conn->notify_sensor("DHT11/humidity", DHT.humidity);
     }
   }
 }
