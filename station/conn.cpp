@@ -78,7 +78,7 @@ void Conn::connect() {
           this->notify_topic("version", version, true);
   
           // ... and resubscribe
-          listen("alarm");
+          listen_alarm();
         } else {
           debugMsg(" ERROR: %d. Trying again later.\n", this->_PubSubClient->state());
         }
@@ -95,6 +95,10 @@ String Conn::fullTopic(String topic) {
   return String(MQTT_TOPIC_PREFIX) + "station/" + this->_stationID + "/" + topic;
 }
 
+String Conn::alarmTopic() {
+  return String(MQTT_TOPIC_PREFIX) + "station/alarm";
+}
+
 void Conn::notify_topic(String topic, String payload, bool retained) {
   debugMsg("-> %s: %s\n", fullTopic(topic).c_str(), payload.c_str());
   this->_PubSubClient->publish(fullTopic(topic).c_str(), payload.c_str(), retained);
@@ -107,7 +111,10 @@ void Conn::notify_sensor(String sensor, float value) {
   this->notify_topic("sensor/" + sensor, String(payload), false);
 }
 
-void Conn::listen(String topic) {
-  debugMsg("++ %s\n", fullTopic(topic).c_str());
-  this->_PubSubClient->subscribe(fullTopic(topic).c_str(), 1);
+void Conn::listen_alarm() {
+  debugMsg("++ %s\n", fullTopic("alarm").c_str());
+  this->_PubSubClient->subscribe(fullTopic("alarm").c_str(), 1);
+
+  debugMsg("++ %s\n", alarmTopic().c_str());
+  this->_PubSubClient->subscribe(alarmTopic().c_str(), 1);
 }
